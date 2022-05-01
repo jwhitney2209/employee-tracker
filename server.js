@@ -27,36 +27,85 @@ const promptUser = () => {
       ]
     }
   ])
+    // begin switch/case
     .then(function(res){
       switch (res.menu) {
         case 'View All Departments':
-        viewAllDepartments();
-        break;
+          viewAllDepartments();
+          break;
+        case 'View All Roles':
+          viewAllRoles();
+          break;
+        case 'View All Employees':
+          viewAllEmployees();
+          break;
+        case 'Add a Department':
+          addDepartment();
+          break;
+        case 'Add a Role':
+          addRole();
+          break;
+        case 'Add an Employee':
+          addEmployee();
+          break;
+        case 'Update an Employee Role':
+          updateEmployeeRole();
+          break;
       }
     })
 };
 
+// View all departments
 const viewAllDepartments = () => {
-  console.log(`Department Info Here`)
+  const sql = `SELECT * FROM department`;
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+    console.table(rows);
+    promptUser();
+  })
 };
+
+// View all roles
 const viewAllRoles = () => {
-  console.log(`Roles Info Here`)
+  const sql = `SELECT role.*, department.name
+              AS department_id
+              FROM role
+              LEFT JOIN department
+              ON role.department_id = department.id`;
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+    console.table(rows);
+    promptUser();
+  })
 };
+
+// View all employees
 const viewAllEmployees = () => {
-  console.log(`Employee Info Here`)
+  const sql = `SELECT * FROM employees`;
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+    console.table(rows);
+    promptUser();
+  })
 };
+
+// Add Department
 const addDepartment = () => {
   console.log(`Here is where you will add a Department.`)
 };
+
+// Add Role
 const addRole = () => {
   console.log(`Here is where you will add a Role.`)
-
 };
+
+// Add Employee
 const addEmployee = () => {
   console.log(`Here is where you will add an Employee.`)
-
 };
-const updateEmployee = () => {
+
+// Update Employee Role
+const updateEmployeeRole = () => {
   console.log(`Here is where you will update an employee!`)
 };
 

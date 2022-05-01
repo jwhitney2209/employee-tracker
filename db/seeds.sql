@@ -1,41 +1,31 @@
 INSERT INTO department
 (name) 
 VALUES
-('Section Leaders'),
-('Voice Part'),
-('Storage'),
-('Stage');
+('Engineer'),
+('Finance'),
+('Legal'),
+('Sales');
 
 INSERT INTO role
 (title, salary, department_id)
 VALUES
-('Soprano Section Leader', 3000, 1),
-('Alto Section Leader', 3000, 1),
-('Tenor Section Leader', 3000, 1),
-('Bass Section Leader', 3000, 1),
-('Soprano', 1000, 2),
-('Alto', 1000, 2),
-('Tenor', 2000, 2),
-('Bass', 2000, 2),
-('Uniform Checker', 4000, 3),
-('Uniform Cleaner', 6000, 3),
-('Riser Crew', 6000, 4),
-('Sound Crew', 7000, 4);
+('Sales Lead', 3000, 4),
+('Salesperson', 3000, 4),
+('Lead Engineer', 3000, 1),
+('Software Engineer', 3000, 1),
+('Account Manager', 1000, 2),
+('Accountant', 1000, 2),
+('Legal Team Lead', 2000, 3),
+('Lawyer', 2000, 3);
 
 INSERT INTO employees
 (first_name, last_name, role_id, manager_id)
 VALUES
 ('Jackie', 'Estrella', 1, null),
-('Ashley', 'Barragan', 2, null),
+('Ashley', 'Barragan', 2, 1),
 ('Erasmo', 'Martinez', 3, null),
-('Frank', 'Quintero', 4, null),
-('Janice', 'Maldonado', 6, 1),
-('Victor', 'Gonzalez', 7, 2),
-('David', 'Hernandez', 5, 3),
-('Carolina', 'Chavez', 8, 4),
-('Christian', 'Quintero', 7, null),
-('Anthony', 'Chavez', 9, null),
-('Andrew', 'Rader', 10, null),
-('Mia', 'Gracia', 11, null),
-('Jesus', 'Guevara', 12, null),
-('Melanie', 'Reyes', 12, null);
+('Frank', 'Quintero', 4, 3),
+('Janice', 'Maldonado', 5, null),
+('Victor', 'Gonzalez', 6, 5),
+('David', 'Hernandez', 7, null),
+('Carolina', 'Chavez', 8, 7);

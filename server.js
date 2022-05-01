@@ -30,16 +30,33 @@ const promptUser = () => {
     .then(function(res){
       switch (res.menu) {
         case 'View All Departments':
-
+        viewAllDepartments();
+        break;
       }
     })
 };
 
-const viewAllDepartments = () => {};
-const viewAllRoles = () => {};
-const viewAllEmployees = () => {};
-const addDepartment = () => {};
-const addRole = () => {};
-const addEmployee = () => {};
-const updateEmployee = () => {};
+const viewAllDepartments = () => {
+  console.log(`Department Info Here`)
+};
+const viewAllRoles = () => {
+  console.log(`Roles Info Here`)
+};
+const viewAllEmployees = () => {
+  console.log(`Employee Info Here`)
+};
+const addDepartment = () => {
+  console.log(`Here is where you will add a Department.`)
+};
+const addRole = () => {
+  console.log(`Here is where you will add a Role.`)
+
+};
+const addEmployee = () => {
+  console.log(`Here is where you will add an Employee.`)
+
+};
+const updateEmployee = () => {
+  console.log(`Here is where you will update an employee!`)
+};
 

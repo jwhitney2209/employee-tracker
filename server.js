@@ -109,3 +109,5 @@ const updateEmployeeRole = () => {
   console.log(`Here is where you will update an employee!`)
 };
 
+// NOTE TO SELF:
+// FINISH WRITING DB QUERIES

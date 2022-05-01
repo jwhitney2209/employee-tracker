@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const db = require('./config/connection');
 const cTable = require('console.table');
+const { response } = require('express');
 
 // Start server after DB connection
 db.connect(err => {
@@ -28,7 +29,7 @@ const promptUser = () => {
     }
   ])
     // begin switch/case
-    .then(function(res){
+    .then(function (res) {
       switch (res.menu) {
         case 'View All Departments':
           viewAllDepartments();
@@ -107,7 +108,7 @@ const addDepartment = () => {
     {
       type: 'input',
       name: 'department',
-      message: 'Please input a NEW department name: ',
+      message: 'Please input a NEW department name:',
       validate: department => {
         if (department) {
           return true;
@@ -120,12 +121,85 @@ const addDepartment = () => {
   ])
     .then((res) => {
       let sql = `INSERT INTO department (name) VALUES (?)`;
-    })
+      db.query(sql, res.department, (err, results) => {
+        if (err) throw err;
+        console.log(`${res.department} has been successfully created!`);
+        viewAllDepartments();
+      });
+    });
 };
 
 // Add Role
 const addRole = () => {
-  console.log(`Here is where you will add a Role.`)
+  // First Ask: What department with this role will be in?
+  const sql = 'SELECT * FROM department';
+
+  db.query(sql, (err, results) => {
+    let departmentArr = [];
+    if (err) throw err;
+    results.forEach((department) => {
+      departmentArr.push(department.name);
+    });
+    inquirer.prompt([
+      {
+        type: 'list',
+        name: 'departmentName',
+        message: 'What department will this role be in?',
+        choices: departmentArr
+      }
+    ])
+      .then((res) => {
+        addRoleInfo(res);
+      });
+
+      // Then Ask: What is the job title? What is the salary?
+      const addRoleInfo = (departmentName) => {
+        inquirer.prompt([
+          {
+            type: 'input',
+            name: 'title',
+            message: 'Please input a NEW job title:',
+            validate: title => {
+              if (title) {
+                return true;
+              } else {
+                console.log('Please enter a job title name!');
+                return false;
+              }
+            },
+          },
+          {
+            type: 'input',
+            name: 'salary',
+            message: 'What will the salary be for this position? ',
+            validate: salary => {
+              if (salary) {
+                return true;
+              } else {
+                console.log('Please enter a salary amount!');
+                return false;
+              }
+            },
+          }
+        ])
+        .then((res) => {
+          let departmentName;
+      
+          results.forEach((department) => {
+            departmentName = department.id;
+          });
+
+          let data = [res.title, res.salary, departmentName]
+          let sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+
+          db.query(sql, data, (err, results) => {
+            if (err) throw err;
+            console.log(`${res.title} has been successfully created!`);
+            viewAllRoles();
+          });
+        });
+      };
+  });
 };
 
 // Add Employee

@@ -81,7 +81,19 @@ const viewAllRoles = () => {
 
 // View all employees
 const viewAllEmployees = () => {
-  const sql = `SELECT * FROM employees`;
+  const sql = `SELECT 
+                E.id,
+                E.first_name, 
+                E.last_name, 
+                role.title, 
+                department.name AS department, 
+                role.salary,
+              CONCAT(M.first_name,' ',M.last_name) AS manager
+              FROM employees E
+              JOIN role ON E.role_id = role.id
+              JOIN department ON role.department_id = department.id
+              LEFT JOIN employees M ON E.manager_id = M.id;
+              `;
   db.query(sql, (err, rows) => {
     if (err) throw err;
     console.table(rows);
@@ -91,7 +103,24 @@ const viewAllEmployees = () => {
 
 // Add Department
 const addDepartment = () => {
-  console.log(`Here is where you will add a Department.`)
+  inquirer.prompt([
+    {
+      type: 'input',
+      name: 'department',
+      message: 'Please input a NEW department name: ',
+      validate: department => {
+        if (department) {
+          return true;
+        } else {
+          console.log('Please enter a department name!');
+          return false;
+        }
+      },
+    }
+  ])
+    .then((res) => {
+      let sql = `INSERT INTO department (name) VALUES (?)`;
+    })
 };
 
 // Add Role

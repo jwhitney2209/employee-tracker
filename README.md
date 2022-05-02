@@ -3,6 +3,10 @@
 ![badge](https://img.shields.io/badge/License-Open-brightgreen)
 
 
+
+https://user-images.githubusercontent.com/95243766/166183529-62974f3b-fbb5-424a-a93c-10d12307cb7f.mp4
+
+
 ## Description
 A command-line application to manage a company's employee database, using Node.js, Inquirer, and MySQL.
 

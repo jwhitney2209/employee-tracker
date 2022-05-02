@@ -317,7 +317,7 @@ const updateEmployeeRole = () => {
         },
       ])
       .then((response) => {
-        updateRole = [response.name, response.role];
+        updateRole = [response.role, response.name];
         
         let updateRoleSql = `UPDATE employees
                             SET employees.role_id = ?

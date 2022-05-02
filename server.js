@@ -1,59 +1,60 @@
-const inquirer = require('inquirer');
-const db = require('./config/connection');
-const cTable = require('console.table');
-const { response } = require('express');
+const inquirer = require("inquirer");
+const db = require("./config/connection");
+const cTable = require("console.table");
+const { response } = require("express");
 
 // Start server after DB connection
-db.connect(err => {
+db.connect((err) => {
   if (err) throw err;
-  console.log('Database connected.');
+  console.log("Database connected.");
   promptUser();
 });
 
 // prompt user with menu after application connects
 const promptUser = () => {
-  inquirer.prompt([
-    {
-      type: 'list',
-      name: 'menu',
-      message: 'What would you like to do?',
-      choices: [
-        'View All Departments',
-        'View All Roles',
-        'View All Employees',
-        'Add a Department',
-        'Add a Role',
-        'Add an Employee',
-        'Update an Employee Role'
-      ]
-    }
-  ])
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "menu",
+        message: "What would you like to do?",
+        choices: [
+          "View All Departments",
+          "View All Roles",
+          "View All Employees",
+          "Add a Department",
+          "Add a Role",
+          "Add an Employee",
+          "Update an Employee Role",
+        ],
+      },
+    ])
     // begin switch/case
     .then(function (res) {
       switch (res.menu) {
-        case 'View All Departments':
+        case "View All Departments":
           viewAllDepartments();
           break;
-        case 'View All Roles':
+        case "View All Roles":
           viewAllRoles();
           break;
-        case 'View All Employees':
+        case "View All Employees":
           viewAllEmployees();
           break;
-        case 'Add a Department':
+        case "Add a Department":
           addDepartment();
           break;
-        case 'Add a Role':
+        case "Add a Role":
           addRole();
           break;
-        case 'Add an Employee':
+        case "Add an Employee":
           addEmployee();
           break;
-        case 'Update an Employee Role':
+        case "Update an Employee Role":
           updateEmployeeRole();
           break;
       }
-    })
+    });
 };
 
 // View all departments
@@ -63,7 +64,7 @@ const viewAllDepartments = () => {
     if (err) throw err;
     console.table(rows);
     promptUser();
-  })
+  });
 };
 
 // View all roles
@@ -77,7 +78,7 @@ const viewAllRoles = () => {
     if (err) throw err;
     console.table(rows);
     promptUser();
-  })
+  });
 };
 
 // View all employees
@@ -99,26 +100,27 @@ const viewAllEmployees = () => {
     if (err) throw err;
     console.table(rows);
     promptUser();
-  })
+  });
 };
 
 // Add Department
 const addDepartment = () => {
-  inquirer.prompt([
-    {
-      type: 'input',
-      name: 'department',
-      message: 'Please input a NEW department name:',
-      validate: department => {
-        if (department) {
-          return true;
-        } else {
-          console.log('Please enter a department name!');
-          return false;
-        }
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "department",
+        message: "Please input a NEW department name:",
+        validate: (department) => {
+          if (department) {
+            return true;
+          } else {
+            console.log("Please enter a department name!");
+            return false;
+          }
+        },
       },
-    }
-  ])
+    ])
     .then((res) => {
       let sql = `INSERT INTO department (name) VALUES (?)`;
       db.query(sql, res.department, (err, results) => {
@@ -131,85 +133,159 @@ const addDepartment = () => {
 
 // Add Role
 const addRole = () => {
-  // First Ask: What department with this role will be in?
-  const sql = 'SELECT * FROM department';
-
-  db.query(sql, (err, results) => {
-    let departmentArr = [];
-    if (err) throw err;
-    results.forEach((department) => {
-      departmentArr.push(department.name);
-    });
-    inquirer.prompt([
+  inquirer
+    .prompt([
       {
-        type: 'list',
-        name: 'departmentName',
-        message: 'What department will this role be in?',
-        choices: departmentArr
-      }
-    ])
-      .then((res) => {
-        addRoleInfo(res);
-      });
-
-      // Then Ask: What is the job title? What is the salary?
-      const addRoleInfo = (departmentName) => {
-        inquirer.prompt([
-          {
-            type: 'input',
-            name: 'title',
-            message: 'Please input a NEW job title:',
-            validate: title => {
-              if (title) {
-                return true;
-              } else {
-                console.log('Please enter a job title name!');
-                return false;
-              }
-            },
-          },
-          {
-            type: 'input',
-            name: 'salary',
-            message: 'What will the salary be for this position? ',
-            validate: salary => {
-              if (salary) {
-                return true;
-              } else {
-                console.log('Please enter a salary amount!');
-                return false;
-              }
-            },
+        type: "input",
+        name: "title",
+        message: "Please input a NEW job title:",
+        validate: (title) => {
+          if (title) {
+            return true;
+          } else {
+            console.log("Please enter a job title name!");
+            return false;
           }
-        ])
-        .then((res) => {
-          let departmentName;
-      
-          results.forEach((department) => {
-            departmentName = department.id;
+        },
+      },
+      {
+        type: "input",
+        name: "salary",
+        message: "What will the salary be for this position? ",
+        validate: (salary) => {
+          if (salary) {
+            return true;
+          } else {
+            console.log("Please enter a salary amount!");
+            return false;
+          }
+        },
+      },
+    ])
+    .then((res) => {
+      roleRes = [res.title, res.salary];
+      let departmentSql = `SELECT * FROM department`;
+      db.query(departmentSql, (err, res) => {
+        if (err) throw err;
+        let department = res.map(({ id, name }) => ({
+          name: name,
+          value: id,
+        }));
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "department",
+              message: "Please select a department for this role:",
+              choices: department,
+            },
+          ])
+          .then((res) => {
+            deptRes = res.department;
+            roleRes.push(deptRes);
+            let roleSql = `INSERT INTO role (title, salary, department_id)
+                      VALUES (?, ?, ?)`;
+            db.query(roleSql, roleRes, (err, results) => {
+              if (err) throw err;
+              console.log("Role creation successful!");
+              promptUser();
+            });
           });
-
-          let data = [res.title, res.salary, departmentName]
-          let sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
-
-          db.query(sql, data, (err, results) => {
-            if (err) throw err;
-            console.log(`${res.title} has been successfully created!`);
-            viewAllRoles();
-          });
-        });
-      };
-  });
+      });
+    });
 };
 
 // Add Employee
 const addEmployee = () => {
-  console.log(`Here is where you will add an Employee.`)
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "firstName",
+        message: "Employee First Name:",
+        validate: (firstName) => {
+          if (firstName) {
+            return true;
+          } else {
+            console.log("Please enter a first name.");
+            return false;
+          }
+        },
+      },
+      {
+        type: "input",
+        name: "lastName",
+        message: "Employee Last Name:",
+        validate: (lastName) => {
+          if (lastName) {
+            return true;
+          } else {
+            console.log("Please enter a last name.");
+            return false;
+          }
+        },
+      },
+    ])
+    .then((res) => {
+      // Take employee first and last name and store in employeeRes array
+      const employeeRes = [res.firstName, res.lastName];
+
+      db.query(`SELECT role.id, role.title FROM role`, (err, results) => {
+        if (err) throw err;
+        let role = results.map(({ id, title }) => ({ name: title, value: id }));
+
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "role",
+              message: "Please select a role for this employee:",
+              choices: role,
+            },
+          ])
+          .then((roleAnswer) => {
+            let roleRes = roleAnswer.role;
+            employeeRes.push(roleRes);
+
+            //
+            db.query(`SELECT * FROM employees`, (err, results) => {
+              if (err) throw err;
+              let manager = results.map(({ id, first_name, last_name }) => ({
+                name: first_name + " " + last_name,
+                value: id,
+              }));
+              inquirer
+                .prompt([
+                  {
+                    type: "list",
+                    name: "manager",
+                    message: "Select the employees manager:",
+                    choices: manager,
+                  },
+                ])
+                // Insert Employee Info into employee table
+                .then((managerAnswer) => {
+                  let managerRes = managerAnswer.manager;
+                  employeeRes.push(managerRes);
+
+                  let employeeSql = `INSERT INTO employees (first_name, last_name, role_id, manager_id)
+                                VALUES (?, ?, ?, ?)`;
+
+                  db.query(employeeSql, employeeRes, (err, results) => {
+                    if (err) throw err;
+                    console.log("Employee creation successful!");
+                    promptUser();
+                  });
+                });
+            });
+          });
+      });
+    });
 };
 
 // Update Employee Role
 const updateEmployeeRole = () => {
-  console.log(`Here is where you will update an employee!`)
+
 };
 
 // NOTE TO SELF:

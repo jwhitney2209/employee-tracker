@@ -285,8 +285,50 @@ const addEmployee = () => {
 
 // Update Employee Role
 const updateEmployeeRole = () => {
+  const employeeSql = `SELECT * FROM employees`;
 
+  db.query(employeeSql, (err, results) => {
+    if (err) throw err;
+    let employees = results.map(({ id, first_name, last_name }) => ({
+      name: first_name + " " + last_name,
+      value: id,
+    }));
+
+    const roleSql = `SELECT role.id, role.title FROM role`;
+
+    db.query(roleSql, (err, results) => {
+      if (err) throw err;
+      let role = results.map(({ id, title }) => ({
+        name: title,
+        value: id,
+      }));
+      inquirer.prompt([
+        {
+          type: 'list',
+          name: 'name',
+          message: 'Which employee would you like to update?',
+          choices: employees,
+        },
+        {
+          type: 'list',
+          name: 'role',
+          message: 'Which role would you like to change this employee to?',
+          choices: role,
+        },
+      ])
+      .then((response) => {
+        updateRole = [response.name, response.role];
+        
+        let updateRoleSql = `UPDATE employees
+                            SET employees.role_id = ?
+                            WHERE employees.id = ?`;
+        db.query(updateRoleSql, updateRole, (err, results) => {
+          if (err) throw err;
+          console.log("Employee Role Update successful!");
+          promptUser();
+        })
+      })
+    })
+  })
 };
 
-// NOTE TO SELF:
-// FINISH WRITING DB QUERIES
